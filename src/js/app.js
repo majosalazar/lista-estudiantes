@@ -12,7 +12,7 @@ function nuevaEstudiante () {
   //guarda nombre alumna
   let nombre = document.getElementById('nombre').value;
   
-  db.collection("estudiantes").add({
+  db.collection("estudiante").add({
     nombre: nombre, 
     skills: null
   })
@@ -44,7 +44,7 @@ db.collection("estudiantes").onSnapshot((querySnapshot) => {
       </div>
       <div class="col-8">
         <p>Skills</p>
-        <div id="agregarSkills"></div>
+        <div id="mostrarSkills"></div>
         <a href="#!" data-toggle="modal" data-target="#exampleModal"">+ agregar</a>
 
         <!-- Modal -->
@@ -52,7 +52,7 @@ db.collection("estudiantes").onSnapshot((querySnapshot) => {
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title"         id="exampleModalLabel">Add new skills</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Add new skills</h5>
                 <button type="button" class="close"         data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
@@ -76,36 +76,34 @@ db.collection("estudiantes").onSnapshot((querySnapshot) => {
   });
 });
 
-function agregarSkills (id,skills) {
-  console.log("hola")
-  let nuevasSkills = document.getElementById('nuevaSkills').value;
-
-  //actualizar datos 
-  var washingtonRef = db.collection("estudiantes").doc(id); 
-
-  // Set the "capital" field of the city 'DC'
-  return washingtonRef.update({
-    skills: nuevasSkills
+//agregar skills a estudiante 
+function agregarSkills () {
+  //guarda nombre alumna
+  let skill = document.getElementById('nuevaSkills').value;
+  
+  db.collection("skills").add({
+    skills: skill
   })
-  .then(function() {
-    console.log("Document successfully updated!");
-    //limpia caja de texto
-    document.getElementById('nuevaSkills').value = ' ';
+  .then(function(docRef) {
+    console.log("Document written with ID: ", docRef.id);
+    db.collection("skills").onSnapshot((querySnapshot) => {
+      mostrarSkills.innerHTML = ' ';
+      querySnapshot.forEach((doc) => {
+        console.log(`${doc.id} => ${doc.data().skill}`);
+        mostrarEstudiantes.innerHTML += `
+        <button type="button" class="btn btn-primary btn-sm">${doc.data().skill} x</button>
     
+        
+        `
+      });
+    });
   })
   .catch(function(error) {
-    // The document probably doesn't exist.
-    console.error("Error updating document: ", error);
+    console.error("Error adding document: ", error);
   });
-  
-  
-}
-/*
-//mostrar nuevas skills
-agregarSkills.innerHTML += `
-<button type="button" class="btn btn-primary btn-sm">${doc.data().nuevasSkills}</button>
+};
+
+//ver tarjeta de cada alumna ingresada
+let skillsEstudiantes = document.getElementById('mostrarSkills');
 
 
-`
-
-*/
